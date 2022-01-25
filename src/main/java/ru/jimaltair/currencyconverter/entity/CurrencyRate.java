@@ -21,6 +21,6 @@ public class CurrencyRate {
     @Column(nullable = false)
     private double rate;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "numCode")
+    @OneToOne(fetch = FetchType.LAZY)
     private Currency currency;
 }
