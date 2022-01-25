@@ -17,15 +17,15 @@ import javax.persistence.Id;
 public class Currency {
 
     @Id
-    @Column(name = "num_code", nullable = false)
+    @Column
     private int numCode;
 
-    @Column(name = "char_code", nullable = false)
+    @Column(nullable = false)
     private String charCode;
 
-    @Column(name = "nominal", nullable = false)
+    @Column(nullable = false)
     private int nominal;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 }
