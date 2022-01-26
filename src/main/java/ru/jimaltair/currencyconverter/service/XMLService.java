@@ -19,8 +19,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,15 +38,13 @@ public class XMLService {
     private static final String DATE_PATTERN = "dd.MM.yyyy";
     private static LocalDate currentDate;
 
-
-    @PostConstruct
-    public void readXml() {
+    public static XMLContent initXMLService() {
         Document xmlDocument = readXML(CBR_XML_URL);
         currentDate = getCurrentDateFromXML(xmlDocument);
-        XMLContent xmlContent = retrieveContentFromXML(xmlDocument);
+        return retrieveContentFromXML(xmlDocument);
     }
 
-    private Document readXML(String URL) {
+    private static Document readXML(String URL) {
         log.info("Start to read xml from {}", URL);
         Document document;
         try {
@@ -64,7 +60,7 @@ public class XMLService {
         return document;
     }
 
-    private LocalDate getCurrentDateFromXML(Document xmlDocument) {
+    private static LocalDate getCurrentDateFromXML(Document xmlDocument) {
         log.debug("Trying to get current date from xml {}", xmlDocument.getDocumentURI());
 
         xmlDocument.getDocumentElement().normalize();
@@ -77,7 +73,7 @@ public class XMLService {
         return LocalDate.parse(date, formatter);
     }
 
-    private XMLContent retrieveContentFromXML(Document xmlDocument) {
+    private static XMLContent retrieveContentFromXML(Document xmlDocument) {
         log.debug("Trying to get xml content from xml {}", xmlDocument.getDocumentURI());
 
         NodeList currenciesNodesList = xmlDocument.getElementsByTagName(VALUTE_TAG);
@@ -87,7 +83,7 @@ public class XMLService {
         }
         // получаем лист, заполненный объектами типа Currency через стрим по листу нод
         List<Currency> currenciesList = intermediateList.stream().
-                map(this::getCurrencyFromXMLNode).
+                map(XMLService::getCurrencyFromXMLNode).
                 collect(Collectors.toList());
         // получаем лист, заполненный объектами типа CurrencyRate через стрим по листу нод
         List<CurrencyRate> currencyRatesList = intermediateList.stream()
@@ -97,7 +93,16 @@ public class XMLService {
         return new XMLContent(currenciesList, currencyRatesList);
     }
 
-    Function<Node, CurrencyRate> nodeToCurrencyRateMapper = node -> {
+    private static Currency getCurrencyFromXMLNode(Node node) {
+        Element element = (Element) node;
+        String numCode = element.getElementsByTagName(NUM_CODE_TAG).item(0).getTextContent();
+        String charCode = element.getElementsByTagName(CHAR_CODE_TAG).item(0).getTextContent();
+        int nominal = Integer.parseInt(element.getElementsByTagName(NOMINAL_TAG).item(0).getTextContent());
+        String name = element.getElementsByTagName(NAME_TAG).item(0).getTextContent();
+        return new Currency(numCode, charCode, nominal, name);
+    }
+
+    static Function<Node, CurrencyRate> nodeToCurrencyRateMapper = node -> {
         Element element = (Element) node;
         double rate = Double.parseDouble(element.getElementsByTagName(VALUE_TAG).item(0).getTextContent().replace(',', '.'));
         return CurrencyRate.builder()
@@ -107,13 +112,4 @@ public class XMLService {
                 .build();
 
     };
-
-    private Currency getCurrencyFromXMLNode(Node node) {
-        Element element = (Element) node;
-        String numCode = element.getElementsByTagName(NUM_CODE_TAG).item(0).getTextContent();
-        String charCode = element.getElementsByTagName(CHAR_CODE_TAG).item(0).getTextContent();
-        int nominal = Integer.parseInt(element.getElementsByTagName(NOMINAL_TAG).item(0).getTextContent());
-        String name = element.getElementsByTagName(NAME_TAG).item(0).getTextContent();
-        return new Currency(numCode, charCode, nominal, name);
-    }
 }
