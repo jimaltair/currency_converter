@@ -1,7 +1,6 @@
 package ru.jimaltair.currencyconverter.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -9,17 +8,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import ru.jimaltair.currencyconverter.entity.Currency;
+import ru.jimaltair.currencyconverter.entity.CurrencyRate;
 import ru.jimaltair.currencyconverter.entity.XMLContent;
 
 import javax.annotation.PostConstruct;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,50 +28,25 @@ import java.util.stream.Collectors;
 @Service
 public class XMLService {
 
-    private static String CBR_XML_URL = "http://www.cbr.ru/scripts/XML_daily.asp";
+    private static final String CBR_XML_URL = "http://www.cbr.ru/scripts/XML_daily.asp";
     private static final String ROOT_TAG = "ValCurs";
     private static final String VALUTE_TAG = "Valute";
+    private static final String NUM_CODE_TAG = "NumCode";
+    private static final String CHAR_CODE_TAG = "CharCode";
+    private static final String NOMINAL_TAG = "Nominal";
+    private static final String NAME_TAG = "Name";
+    private static final String VALUE_TAG = "Value";
     private static final String DATE_ATTRIBUTE_NAME = "Date";
+    private static final String DATE_PATTERN = "dd.MM.yyyy";
+    private static LocalDate currentDate;
+
 
     @PostConstruct
-    public void readAndPrintXml() {
+    public void readXml() {
         Document xmlDocument = readXML(CBR_XML_URL);
-//        tempXmlPrintMethod(xmlDocument);
+        currentDate = getCurrentDateFromXML(xmlDocument);
         XMLContent xmlContent = retrieveContentFromXML(xmlDocument);
     }
-
-    private XMLContent retrieveContentFromXML(Document xmlDocument) {
-        xmlDocument.getDocumentElement().normalize();
-        NodeList nodeList = xmlDocument.getElementsByTagName(ROOT_TAG);
-        Node rootNode = nodeList.item(0);
-
-        // получаем текущую дату из аттрибута корневой ноды
-        String date = rootNode.getAttributes().getNamedItem(DATE_ATTRIBUTE_NAME).getTextContent();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate currentDate = LocalDate.parse(date, formatter);
-
-        // получаем лист, заполненный объектами типа Currency через стрим по листу нод
-        NodeList currenciesNodesList = xmlDocument.getElementsByTagName(VALUTE_TAG);
-        List<Node> intermediateList = new ArrayList<>();
-        for (int i = 0; i < currenciesNodesList.getLength(); i++) {
-            intermediateList.add(currenciesNodesList.item(i));
-        }
-        List<Currency> currenciesList = intermediateList.stream().
-                map(nodeMapper).
-                collect(Collectors.toList());
-
-
-        return new XMLContent();
-    }
-
-    Function<Node, Currency> nodeMapper = node -> {
-        Element element = (Element) node;
-        String numCode = element.getElementsByTagName("NumCode").item(0).getTextContent();
-        String charCode = element.getElementsByTagName("CharCode").item(0).getTextContent();
-        int nominal = Integer.parseInt(element.getElementsByTagName("Nominal").item(0).getTextContent());
-        String name = element.getElementsByTagName("Name").item(0).getTextContent();
-        return new Currency(numCode, charCode, nominal, name);
-    };
 
     private Document readXML(String URL) {
         log.info("Start to read xml from {}", URL);
@@ -92,16 +64,56 @@ public class XMLService {
         return document;
     }
 
-    // временный метод - печать курсов в консоль для проверки корректности парсинга
-    private void tempXmlPrintMethod(Document document) {
-        Map<String, String> valute = new TreeMap<>();
-        NodeList nodeList = document.getChildNodes();
-        for (int x = 0, size = 34; x < size; x++) {
-            valute.put(nodeList.item(0).getChildNodes().item(x).getChildNodes().item(3).getTextContent(),
-                    nodeList.item(0).getChildNodes().item(x).getChildNodes().item(4).getTextContent());
+    private LocalDate getCurrentDateFromXML(Document xmlDocument) {
+        log.debug("Trying to get current date from xml {}", xmlDocument.getDocumentURI());
+
+        xmlDocument.getDocumentElement().normalize();
+        NodeList nodeList = xmlDocument.getElementsByTagName(ROOT_TAG);
+        Node rootNode = nodeList.item(0);
+
+        // получаем текущую дату из аттрибута корневой ноды
+        String date = rootNode.getAttributes().getNamedItem(DATE_ATTRIBUTE_NAME).getTextContent();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+        return LocalDate.parse(date, formatter);
+    }
+
+    private XMLContent retrieveContentFromXML(Document xmlDocument) {
+        log.debug("Trying to get xml content from xml {}", xmlDocument.getDocumentURI());
+
+        NodeList currenciesNodesList = xmlDocument.getElementsByTagName(VALUTE_TAG);
+        List<Node> intermediateList = new ArrayList<>();
+        for (int i = 0; i < currenciesNodesList.getLength(); i++) {
+            intermediateList.add(currenciesNodesList.item(i));
         }
-        for (Map.Entry<String, String> entry : valute.entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        }
+        // получаем лист, заполненный объектами типа Currency через стрим по листу нод
+        List<Currency> currenciesList = intermediateList.stream().
+                map(this::getCurrencyFromXMLNode).
+                collect(Collectors.toList());
+        // получаем лист, заполненный объектами типа CurrencyRate через стрим по листу нод
+        List<CurrencyRate> currencyRatesList = intermediateList.stream()
+                .map(nodeToCurrencyRateMapper)
+                .collect(Collectors.toList());
+
+        return new XMLContent(currenciesList, currencyRatesList);
+    }
+
+    Function<Node, CurrencyRate> nodeToCurrencyRateMapper = node -> {
+        Element element = (Element) node;
+        double rate = Double.parseDouble(element.getElementsByTagName(VALUE_TAG).item(0).getTextContent().replace(',', '.'));
+        return CurrencyRate.builder()
+                .rate(rate)
+                .date(currentDate)
+                .currency(getCurrencyFromXMLNode(node))
+                .build();
+
+    };
+
+    private Currency getCurrencyFromXMLNode(Node node) {
+        Element element = (Element) node;
+        String numCode = element.getElementsByTagName(NUM_CODE_TAG).item(0).getTextContent();
+        String charCode = element.getElementsByTagName(CHAR_CODE_TAG).item(0).getTextContent();
+        int nominal = Integer.parseInt(element.getElementsByTagName(NOMINAL_TAG).item(0).getTextContent());
+        String name = element.getElementsByTagName(NAME_TAG).item(0).getTextContent();
+        return new Currency(numCode, charCode, nominal, name);
     }
 }
