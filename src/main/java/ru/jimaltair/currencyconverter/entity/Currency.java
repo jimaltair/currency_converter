@@ -18,7 +18,7 @@ public class Currency {
 
     @Id
     @Column
-    private int numCode;
+    private String numCode;
 
     @Column(nullable = false)
     private String charCode;
