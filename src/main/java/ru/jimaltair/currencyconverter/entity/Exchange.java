@@ -29,7 +29,7 @@ public class Exchange {
     private Currency secondCurrency;
 
     @Column(nullable = false)
-    private BigDecimal amount;
+    private double amount;
 
     @Column(nullable = false)
     private LocalDateTime madeAt;
