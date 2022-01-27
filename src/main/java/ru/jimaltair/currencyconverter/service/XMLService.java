@@ -1,7 +1,7 @@
 package ru.jimaltair.currencyconverter.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,7 +11,6 @@ import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.CurrencyRate;
 import ru.jimaltair.currencyconverter.entity.XMLContent;
 
-import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -23,7 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Component
 public class XMLService {
 
     private static final String CBR_XML_URL = "http://www.cbr.ru/scripts/XML_daily.asp";
@@ -39,6 +38,7 @@ public class XMLService {
     private static LocalDate currentDate;
 
     public static XMLContent initXMLService() {
+        log.debug("Try to init XMLService");
         Document xmlDocument = readXML(CBR_XML_URL);
         currentDate = getCurrentDateFromXML(xmlDocument);
         return retrieveContentFromXML(xmlDocument);
@@ -94,6 +94,7 @@ public class XMLService {
     }
 
     private static Currency getCurrencyFromXMLNode(Node node) {
+        log.debug("Trying to get Currency from xml node {}", node.getNodeName());
         Element element = (Element) node;
         String numCode = element.getElementsByTagName(NUM_CODE_TAG).item(0).getTextContent();
         String charCode = element.getElementsByTagName(CHAR_CODE_TAG).item(0).getTextContent();
@@ -104,7 +105,8 @@ public class XMLService {
 
     static Function<Node, CurrencyRate> nodeToCurrencyRateMapper = node -> {
         Element element = (Element) node;
-        double rate = Double.parseDouble(element.getElementsByTagName(VALUE_TAG).item(0).getTextContent().replace(',', '.'));
+        double rate = Double.parseDouble(element.getElementsByTagName(VALUE_TAG).item(0)
+                .getTextContent().replace(',', '.'));
         return CurrencyRate.builder()
                 .rate(rate)
                 .date(currentDate)

@@ -16,13 +16,6 @@ import java.time.LocalDate;
 @SpringBootApplication
 public class CurrencyConverterApplication {
 
-    private static final Currency ROUBLE = new Currency("643", "RUB", 1, "Российский рубль");
-    private static final CurrencyRate ROUBLE_RATE = CurrencyRate.builder()
-            .rate(1)
-            .date(LocalDate.now())
-            .currency(ROUBLE)
-            .build();
-
     public static void main(String[] args) {
         SpringApplication.run(CurrencyConverterApplication.class, args);
     }
@@ -31,10 +24,7 @@ public class CurrencyConverterApplication {
     ApplicationRunner initApplicationRunner(CurrencyRepository currencyRepository, CurrencyRateRepository currencyRateRepository){
         XMLContent xmlContent = XMLService.initXMLService();
         return args -> {
-            currencyRepository.save(ROUBLE);
             currencyRepository.saveAll(xmlContent.getCurrencies());
-
-            currencyRateRepository.save(ROUBLE_RATE);
             currencyRateRepository.saveAll(xmlContent.getCurrencyRates());
         };
 
