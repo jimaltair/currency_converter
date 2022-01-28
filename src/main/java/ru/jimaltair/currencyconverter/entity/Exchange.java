@@ -1,16 +1,13 @@
 package ru.jimaltair.currencyconverter.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +26,13 @@ public class Exchange {
     private Currency secondCurrency;
 
     @Column(nullable = false)
-    private double amount;
+    private double rate;
+
+    @Column(nullable = false)
+    private double amountFirstCurrency;
+
+    @Column(nullable = false)
+    private double resultOfConversion;
 
     @Column(nullable = false)
     private LocalDateTime madeAt;
