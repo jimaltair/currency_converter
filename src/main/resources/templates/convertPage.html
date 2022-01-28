@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Конвертер валют</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<div id="feedback"></div>
+<form class="listForm" id="convertForm">
+    <div class="selectors">
+        <h1>Конвертер</h1>
+        <div class="form-inline">
+            <select class="form-control" id="currency1" th:field="*{currencies}">
+                <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
+            </select>
+            <select class="form-control" id="currency2">
+                <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
+            </select>
+        </div>
+    </div>
+    <div class="form-inline">
+        <input type="text" class="form-control" id="amount"/>
+        <input type="text" class="form-control" id="result">
+    </div>
+    <button type="submit" id="btn-convert" class="btn btn-primary btn-lg"> Конвертировать</button>
+</form>
+
+</body>
+</html>

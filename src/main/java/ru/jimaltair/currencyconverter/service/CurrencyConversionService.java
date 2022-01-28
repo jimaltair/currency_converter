@@ -15,6 +15,7 @@ import ru.jimaltair.currencyconverter.repository.ExchangeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -72,5 +73,9 @@ public class CurrencyConversionService {
                 .build();
         exchangeRepository.save(exchange);
         return result;
+    }
+
+    public Iterable<Currency> getAllCurrency() {
+        return currencyRepository.findAll();
     }
 }
