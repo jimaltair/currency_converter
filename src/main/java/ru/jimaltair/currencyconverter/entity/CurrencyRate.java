@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @ToString
+@EqualsAndHashCode(exclude = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 public class CurrencyRate {
