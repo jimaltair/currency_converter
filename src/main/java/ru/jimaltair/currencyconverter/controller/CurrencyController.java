@@ -1,36 +1,42 @@
 package ru.jimaltair.currencyconverter.controller;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.jimaltair.currencyconverter.dto.ConvertForm;
-import ru.jimaltair.currencyconverter.dto.ResponseDto;
 import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.service.CurrencyConversionService;
 
 @Slf4j
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/")
+@Controller
+@AllArgsConstructor
 public class CurrencyController {
 
     private final CurrencyConversionService conversionService;
 
     @GetMapping("/converter")
     public ModelAndView getConverter() {
-        log.info("ЗАПУСКАЮ КОНВЕРТЕР");
-        Iterable<Currency> currencies = conversionService.getAllCurrency();
-        return new ModelAndView("convertPage", "currencies", currencies);
+        Iterable<Currency> currencies = conversionService.getAllCurrencies();
+        ModelAndView mv = new ModelAndView("converter");
+        mv.addObject("currencies", currencies);
+        mv.addObject("convertForm", new ConvertForm());
+        return mv;
     }
 
     @PostMapping("/converter")
-    public ResponseEntity<ResponseDto> convertCurrencies(@RequestBody ConvertForm convertForm){
-        ResponseDto responseDto = new ResponseDto();
-        double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(),
-                convertForm.getSecondCurrency(), convertForm.getAmount());
-        responseDto.setResult(result);
-        return ResponseEntity.ok(responseDto);
+    public ModelAndView convert(@ModelAttribute ConvertForm convertForm) {
+        log.info("Starting to calculate conversion");
+
+        Iterable<Currency> currencies = conversionService.getAllCurrencies();
+        double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(), convertForm.getSecondCurrency(),
+                convertForm.getAmount());
+        ModelAndView mv = new ModelAndView("converter");
+        mv.addObject("currencies", currencies);
+        mv.addObject("result", result);
+
+        log.info("The conversion is completed");
+        return mv;
     }
 }
