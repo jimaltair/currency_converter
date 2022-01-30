@@ -11,6 +11,7 @@ import ru.jimaltair.currencyconverter.repository.CurrencyRateRepository;
 import ru.jimaltair.currencyconverter.repository.CurrencyRepository;
 import ru.jimaltair.currencyconverter.repository.ExchangeRepository;
 
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,6 +62,8 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
 
         // вычисляем результат конвертации по формуле, приведённой в начале метода
         double result = amount * (curRate1.getRate() / cur1Nominal) / (curRate2.getRate() / cur2Nominal);
+        // округляем результат до 4-ёх знаков после запятой
+        result = Double.parseDouble(new DecimalFormat("#.####").format(result).replace(',', '.'));
         log.info("The result of conversion is {} {}", result, secondCurrencyCode);
         Exchange exchange = Exchange.builder()
                 .firstCurrency(cur1)

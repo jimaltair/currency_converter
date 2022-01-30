@@ -25,28 +25,18 @@ public class CurrencyController {
         return mv;
     }
 
-//    @PostMapping("/converter")
-//    public String conversionSubmit(@RequestBody ConvertForm convertForm) {
-//        log.info("Starting to calculate conversion");
-//        double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(),
-//                convertForm.getSecondCurrency(), convertForm.getAmount());
-//        log.info("The result of conversion is {} {}", result, convertForm.getSecondCurrency());
-//        return "convertPage";
-//    }
-
     @PostMapping("/converter")
     public ModelAndView convert(@ModelAttribute ConvertForm convertForm) {
         log.info("Starting to calculate conversion");
 
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
-        ModelAndView mv = new ModelAndView("converter");
-        mv.addObject("currencies", currencies);
-
         double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(), convertForm.getSecondCurrency(),
                 convertForm.getAmount());
-        log.info("The conversion is completed");
-
+        ModelAndView mv = new ModelAndView("converter");
+        mv.addObject("currencies", currencies);
         mv.addObject("result", result);
+
+        log.info("The conversion is completed");
         return mv;
     }
 }
