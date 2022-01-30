@@ -8,7 +8,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.jimaltair.currencyconverter.dto.ConvertForm;
 import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.service.CurrencyConversionService;
-import ru.jimaltair.currencyconverter.service.CurrencyConversionServiceImpl;
 
 @Slf4j
 @Controller
@@ -36,14 +35,18 @@ public class CurrencyController {
 //    }
 
     @PostMapping("/converter")
-//    @ResponseBody
-    public String convert(@ModelAttribute ConvertForm convertForm) {
+    public ModelAndView convert(@ModelAttribute ConvertForm convertForm) {
         log.info("Starting to calculate conversion");
-//        ResponseDto responseDto = new ResponseDto();
+
+        Iterable<Currency> currencies = conversionService.getAllCurrencies();
+        ModelAndView mv = new ModelAndView("converter");
+        mv.addObject("currencies", currencies);
+
         double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(), convertForm.getSecondCurrency(),
                 convertForm.getAmount());
-        log.info("The result of conversion is {} {}", result, convertForm.getSecondCurrency());
-//        responseDto.setResult(result);
-        return "test";
+        log.info("The conversion is completed");
+
+        mv.addObject("result", result);
+        return mv;
     }
 }

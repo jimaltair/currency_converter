@@ -11,6 +11,7 @@ import ru.jimaltair.currencyconverter.repository.CurrencyRateRepository;
 import ru.jimaltair.currencyconverter.repository.CurrencyRepository;
 import ru.jimaltair.currencyconverter.repository.ExchangeRepository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -47,10 +48,11 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         CurrencyRate curRate1 = currencyRateRepository.findTopByCurrency(cur1);
         CurrencyRate curRate2 = currencyRateRepository.findTopByCurrency(cur2);
 
-        // если дата получения курса хотя бы одной из валют устарела, делаем запрос к ЦБР на получение актуальных курсов
-        // и сохраняем эти данные в БД, после этого запрашиваем обновлённый курс вычисляемых валют
+        // если дата получения курса хотя бы одной из валют устарела (кроме воскресенья), делаем запрос к ЦБР на получение
+        // актуальных курсов и сохраняем эти данные в БД, после этого запрашиваем обновлённый курс вычисляемых валют
         LocalDate currentDate = LocalDate.now();
-        if (curRate1.getDate().isBefore(currentDate) || curRate2.getDate().isBefore(currentDate)) {
+        if (currentDate.getDayOfWeek() != DayOfWeek.SUNDAY && (curRate1.getDate().isBefore(currentDate) || curRate2.getDate().isBefore(currentDate))) {
+            log.info("Try to load new rates from CBR for {}", currentDate);
             XMLContent xmlContent = XMLService.initXMLService();
             currencyRateRepository.saveAll(xmlContent.getCurrencyRates());
             curRate1 = currencyRateRepository.findTopByCurrency(cur1);

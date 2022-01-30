@@ -8,32 +8,32 @@
 <body>
 
 <div id="feedback"></div>
-<!--<form th:method="POST" th:action="@{/converter}" class="listForm" id="convertForm" th:object="${convertForm}">-->
-<!--    <div class="selectors">-->
-<!--        <h1>Конвертер</h1>-->
-<!--        <div class="form-inline">-->
-<!--            <select class="form-control" id="currency1" th:field="*{currencies}" required>-->
-<!--                <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>-->
-<!--            </select>-->
-<!--            <select class="form-control" id="currency2" required>-->
-<!--                <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>-->
-<!--            </select>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="form-inline">-->
-<!--        <input type="text" class="form-control" id="amount"/>-->
-<!--&lt;!&ndash;        <input type="text" class="form-control" id="result">&ndash;&gt;-->
-<!--    </div>-->
-<!--    <button type="submit" id="btn-convert" class="btn btn-primary btn-lg">Конвертировать</button>-->
-<!--</form>-->
-
-simple test form
-<form th:method="POST" th:action="@{/converter}" th:object="${convertForm}">
-    <input type="text" th:field="*{firstCurrency}">
-    <input type="text" th:field="*{secondCurrency}">
-    <input type="text" th:field="*{amount}" name="Сумма">
-    <button type="submit">Конвертировать</button>
+<form th:method="POST" th:action="@{/converter}" class="listForm" id="convertForm" th:object="${convertForm}">
+    <div class="selectors">
+        <h1>Конвертер</h1>
+        <div class="form-inline">
+            <select class="form-control" id="currency1" th:field="*{firstCurrency}">
+                <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
+            </select>
+            <select class="form-control" id="currency2" th:field="*{secondCurrency}">
+                <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
+            </select>
+        </div>
+    </div>
+    <div class="form-inline">
+        <input type="text" class="form-control" id="amount" th:field="*{amount}"/>
+        <input type="text" class="form-control" id="result" placeholder="результат" th:value="${result}">
+    </div>
+    <button type="submit" id="btn-convert" class="btn btn-primary btn-lg">Конвертировать</button>
 </form>
+
+<!--simple test form-->
+<!--<form th:method="POST" th:action="@{/converter}" th:object="${convertForm}">-->
+<!--    <input type="text" th:field="*{firstCurrency}">-->
+<!--    <input type="text" th:field="*{secondCurrency}">-->
+<!--    <input type="text" th:field="*{amount}" name="Сумма">-->
+<!--    <button type="submit">Конвертировать</button>-->
+<!--</form>-->
 
 </body>
 </html>
