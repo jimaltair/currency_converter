@@ -5,5 +5,5 @@ import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.CurrencyRate;
 
 public interface CurrencyRateRepository extends CrudRepository<CurrencyRate, Long> {
-    CurrencyRate findByCurrency(Currency currency);
+    CurrencyRate findTopByCurrency(Currency currency);
 }
