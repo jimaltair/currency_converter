@@ -4,6 +4,7 @@ import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.Exchange;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface CurrencyConversionService {
 
@@ -11,5 +12,5 @@ public interface CurrencyConversionService {
 
     Iterable<Currency> getAllCurrencies();
 
-    Iterable<Exchange> getHistory(String firstCurrency, String secondCurrency, LocalDate date);
+    List<Exchange> getHistory(String firstCurrency, String secondCurrency, LocalDate date);
 }

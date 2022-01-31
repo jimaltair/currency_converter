@@ -5,9 +5,10 @@ import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.Exchange;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface ExchangeRepository extends CrudRepository<Exchange, Long> {
-    Iterable<Exchange> findAllByFirstCurrencyCharCodeAndSecondCurrencyCharCodeAndMadeAt(String firstCurrency,
-                                                                                        String secondCurrency,
-                                                                                        LocalDate date);
+    List<Exchange> findAllByFirstCurrencyCharCodeAndSecondCurrencyCharCodeAndMadeAt(String firstCurrency,
+                                                                                    String secondCurrency,
+                                                                                    LocalDate date);
 }

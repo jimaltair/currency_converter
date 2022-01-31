@@ -12,6 +12,10 @@ import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.Exchange;
 import ru.jimaltair.currencyconverter.service.CurrencyConversionService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 @Slf4j
 @Controller
 @AllArgsConstructor
@@ -20,12 +24,10 @@ public class CurrencyController {
     private final CurrencyConversionService conversionService;
 
     @GetMapping("/converter")
-    public ModelAndView getConverter() {
+    public ModelAndView getConvertPage(@ModelAttribute ConvertForm convertForm) {
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
         ModelAndView mv = new ModelAndView("converter");
         mv.addObject("currencies", currencies);
-        mv.addObject("convertForm", new ConvertForm());
-        mv.addObject("historyForm", new HistoryForm());
         return mv;
     }
 
@@ -44,26 +46,26 @@ public class CurrencyController {
         return mv;
     }
 
-//    @PostMapping("/history")
-//    public ModelAndView getHistory(@ModelAttribute HistoryForm historyForm) {
-//        log.info("starting to search conversion history");
-//        ModelAndView mv = new ModelAndView("converter");
-//        Iterable<Currency> currencies = conversionService.getAllCurrencies();
-//        mv.addObject("currencies", currencies);
-//
-//        Iterable<Exchange> history = conversionService.getHistory(historyForm.getFirstCurrency(),
-//                historyForm.getSecondCurrency(), historyForm.getDate());
-//        return mv;
-//    }
-
     @GetMapping("/history")
     public ModelAndView getHistoryPage(@ModelAttribute HistoryForm historyForm) {
         ModelAndView mv = new ModelAndView("history");
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
         mv.addObject("currencies", currencies);
+        return mv;
+    }
 
-        Iterable<Exchange> history = conversionService.getHistory(historyForm.getFirstCurrency(),
+    @PostMapping("/history")
+    public ModelAndView getHistory(@ModelAttribute HistoryForm historyForm) {
+        log.info("Starting to search conversion history");
+        ModelAndView mv = new ModelAndView("history");
+        Iterable<Currency> currencies = conversionService.getAllCurrencies();
+        mv.addObject("currencies", currencies);
+
+        List<Exchange> exchangeHistory = conversionService.getHistory(historyForm.getFirstCurrency(),
                 historyForm.getSecondCurrency(), historyForm.getDate());
+        log.info("Received the history with {} records", exchangeHistory.size());
+        mv.addObject("exchangeHistory", exchangeHistory);
+
         return mv;
     }
 }

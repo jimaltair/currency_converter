@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -83,7 +84,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     }
 
     @Override
-    public Iterable<Exchange> getHistory(String firstCurrency, String secondCurrency, LocalDate date) {
+    public List<Exchange> getHistory(String firstCurrency, String secondCurrency, LocalDate date) {
         return exchangeRepository.findAllByFirstCurrencyCharCodeAndSecondCurrencyCharCodeAndMadeAt(firstCurrency, secondCurrency, date);
     }
 }
