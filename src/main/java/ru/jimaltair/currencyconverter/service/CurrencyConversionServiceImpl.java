@@ -36,7 +36,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
          * где:
          *
          * Res - результат конвертации из валюты №1 в валюту №2
-         * N1 - количество валюты №1, конвертацию который мы рассчитываем
+         * N1 - количество валюты №1, конвертацию которой мы рассчитываем
          * R1 - отношение к рублю валюты №1
          * R2 - отношение к рублю валюты №2
          * Nom1 - номинал валюты №1
@@ -62,14 +62,16 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         }
 
         // вычисляем результат конвертации по формуле, приведённой в начале метода
-        double result = amount * (curRate1.getRate() / cur1Nominal) / (curRate2.getRate() / cur2Nominal);
+        double crossRate = (curRate1.getRate() / cur1Nominal) / (curRate2.getRate() / cur2Nominal);
+        double result = amount * crossRate;
         // округляем результат до 4-ёх знаков после запятой
         result = Double.parseDouble(new DecimalFormat("#.####").format(result).replace(',', '.'));
+        crossRate = Double.parseDouble(new DecimalFormat("#.####").format(crossRate).replace(',', '.'));
         log.info("The result of conversion is {} {}", result, secondCurrencyCode);
         Exchange exchange = Exchange.builder()
                 .firstCurrency(cur1)
                 .secondCurrency(cur2)
-                .rate(curRate1.getRate())
+                .rate(crossRate)
                 .amountFirstCurrency(amount)
                 .resultOfConversion(result)
                 .madeAt(LocalDate.now())
