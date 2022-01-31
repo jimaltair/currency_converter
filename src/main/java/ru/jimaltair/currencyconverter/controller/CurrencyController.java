@@ -59,12 +59,15 @@ public class CurrencyController {
     }
 
     @PostMapping("/history")
-    public ModelAndView getHistory(@ModelAttribute HistoryForm historyForm) {
+    public ModelAndView getHistory(@ModelAttribute @Valid HistoryForm historyForm, BindingResult bindingResult) {
         log.info("Starting to search conversion history");
         ModelAndView mv = new ModelAndView("history");
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
         mv.addObject("currencies", currencies);
-
+        if (bindingResult.hasErrors()) {
+            log.error("The field 'date' is in future");
+            return mv;
+        }
         List<Exchange> exchangeHistory = conversionService.getHistory(historyForm.getFirstCurrency(),
                 historyForm.getSecondCurrency(), historyForm.getDate());
         log.info("Received the history with {} records", exchangeHistory.size());

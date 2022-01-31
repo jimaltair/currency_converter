@@ -21,6 +21,7 @@
         </select>
     </div>
 
+    <h6 th:if="${#fields.hasErrors('date')}">дата не может быть в будущем</h6>
     <table style="width: 50%" class="table table-striped" id="historyTable">
         <thead class="thead-light">
         <tr>
@@ -28,7 +29,7 @@
             <th>Валюта конвертации</th>
             <th>Исходная сумма</th>
             <th>Курс</th>
-            <th>Сумма после конвертации</th>
+            <th>Результат конвертации</th>
             <th>Дата</th>
         </tr>
         </thead>
