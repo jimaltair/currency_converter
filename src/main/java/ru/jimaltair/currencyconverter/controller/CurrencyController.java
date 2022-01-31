@@ -3,6 +3,7 @@ package ru.jimaltair.currencyconverter.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,16 +34,18 @@ public class CurrencyController {
     }
 
     @PostMapping("/converter")
-    public ModelAndView convert(@ModelAttribute @Valid ConvertForm convertForm) {
+    public ModelAndView convert(@ModelAttribute @Valid ConvertForm convertForm, BindingResult bindingResult) {
         log.info("Starting to calculate conversion");
-
-        Iterable<Currency> currencies = conversionService.getAllCurrencies();
-        double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(), convertForm.getSecondCurrency(),
-                convertForm.getAmount());
         ModelAndView mv = new ModelAndView("converter");
+        Iterable<Currency> currencies = conversionService.getAllCurrencies();
         mv.addObject("currencies", currencies);
+        if (bindingResult.hasErrors()) {
+            log.error("The field 'amount' is negative");
+            return mv;
+        }
+        double result = conversionService.calculateConversionResult(convertForm.getFirstCurrency(),
+                convertForm.getSecondCurrency(), convertForm.getAmount());
         mv.addObject("result", result);
-
         log.info("The conversion is completed");
         return mv;
     }
