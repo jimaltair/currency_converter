@@ -71,7 +71,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
                 .rate(curRate1.getRate())
                 .amountFirstCurrency(amount)
                 .resultOfConversion(result)
-                .madeAt(LocalDateTime.now())
+                .madeAt(LocalDate.now())
                 .build();
         exchangeRepository.save(exchange);
         return result;
@@ -80,5 +80,10 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     @Override
     public Iterable<Currency> getAllCurrencies() {
         return currencyRepository.findAll();
+    }
+
+    @Override
+    public Iterable<Exchange> getHistory(String firstCurrency, String secondCurrency, LocalDate date) {
+        return exchangeRepository.findAllByFirstCurrencyCharCodeAndSecondCurrencyCharCodeAndMadeAt(firstCurrency, secondCurrency, date);
     }
 }

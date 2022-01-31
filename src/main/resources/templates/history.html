@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>История конвертаций</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{/history}" class="listForm" id="historyForm" th:object="${historyForm}">
+    <h1>История</h1>
+    <div class="form-inline">
+        <input type="date" class="form-control" id="historyDate"/>
+        <select class="form-control" id="firstCurrency" th:field="*{firstCurrency}">
+            <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
+        </select>
+        <select class="form-control" id="secondCurrency" th:field="*{secondCurrency}">
+            <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
+        </select>
+    </div>
+
+    <table class="table table-striped" id="historyTable">
+        <thead class="thead-light">
+        <tr>
+            <th>Исходная валюта</th>
+            <th>Целевая валюта</th>
+            <th>Исходная сумма</th>
+            <th>Целевая сумма</th>
+            <th>Дата</th>
+        </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+
+    <button type="submit" id="btn-search" class="btn btn-primary btn-lg">Поиск</button>
+</form>
+<form action="/converter">
+    <button>Конвертировать валюту</button>
+</form>
+<div class="container">
+    <div class="history-template">
+        <div id="history"></div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -10,7 +10,7 @@
 <div id="feedback"></div>
 <form th:method="POST" th:action="@{/converter}" class="listForm" id="convertForm" th:object="${convertForm}">
     <div class="selectors">
-        <h1>Конвертер</h1>
+        <h1>Конвертер валют</h1>
         <div class="form-inline">
             <select class="form-control" id="currency1" th:field="*{firstCurrency}">
                 <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
@@ -26,14 +26,14 @@
     </div>
     <button type="submit" id="btn-convert" class="btn btn-primary btn-lg">Конвертировать</button>
 </form>
-
-<!--simple test form-->
-<!--<form th:method="POST" th:action="@{/converter}" th:object="${convertForm}">-->
-<!--    <input type="text" th:field="*{firstCurrency}">-->
-<!--    <input type="text" th:field="*{secondCurrency}">-->
-<!--    <input type="text" th:field="*{amount}" name="Сумма">-->
-<!--    <button type="submit">Конвертировать</button>-->
-<!--</form>-->
+<form action="/history">
+    <button>История конвертаций</button>
+</form>
+<div class="container">
+    <div class="history-template">
+        <div id="history"></div>
+    </div>
+</div>
 
 </body>
 </html>

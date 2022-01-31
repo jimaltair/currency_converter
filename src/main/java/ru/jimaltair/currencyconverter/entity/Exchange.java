@@ -3,7 +3,7 @@ package ru.jimaltair.currencyconverter.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -35,5 +35,5 @@ public class Exchange {
     private double resultOfConversion;
 
     @Column(nullable = false)
-    private LocalDateTime madeAt;
+    private LocalDate madeAt;
 }
