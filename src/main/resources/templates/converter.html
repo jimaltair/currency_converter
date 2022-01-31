@@ -4,36 +4,32 @@
     <meta charset="UTF-8">
     <title>Конвертер валют</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
 </head>
 <body>
 
-<div id="feedback"></div>
 <form th:method="POST" th:action="@{/converter}" class="listForm" id="convertForm" th:object="${convertForm}">
     <div class="selectors">
         <h1>Конвертер валют</h1>
         <div class="form-inline">
-            <select class="form-control" id="currency1" th:field="*{firstCurrency}">
+            <select style="width: 300px" class="form-control" id="currency1" th:field="*{firstCurrency}">
                 <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
             </select>
-            <select class="form-control" id="currency2" th:field="*{secondCurrency}">
+            <select style="width: 300px" class="form-control" id="currency2" th:field="*{secondCurrency}">
                 <option th:each="currency: ${currencies}" th:value="${currency.charCode}" th:utext="${currency.charCode} + ' (' + ${currency.name} + ')'"></option>
             </select>
         </div>
     </div>
     <div class="form-inline">
-        <input type="text" class="form-control" id="amount" th:field="*{amount}"/>
-        <input type="text" class="form-control" id="result" placeholder="результат" th:value="${result}">
+        <input style="width: 300px" type="text" class="form-control" id="amount" th:field="*{amount}"/>
+        <input style="width: 300px" type="text" class="form-control" id="result" placeholder="результат" th:value="${result}">
     </div>
     <button type="submit" id="btn-convert" class="btn btn-primary btn-lg">Конвертировать</button>
 </form>
-<form action="/history">
-    <button>История конвертаций</button>
+<form class="listForm" action="/history">
+    <button id="btn-redirect">История конвертаций</button>
 </form>
-<div class="container">
-    <div class="history-template">
-        <div id="history"></div>
-    </div>
-</div>
 
 </body>
 </html>

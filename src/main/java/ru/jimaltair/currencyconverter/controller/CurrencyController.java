@@ -12,6 +12,7 @@ import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.Exchange;
 import ru.jimaltair.currencyconverter.service.CurrencyConversionService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -24,7 +25,7 @@ public class CurrencyController {
     private final CurrencyConversionService conversionService;
 
     @GetMapping("/converter")
-    public ModelAndView getConvertPage(@ModelAttribute ConvertForm convertForm) {
+    public ModelAndView getConvertPage(@ModelAttribute @Valid ConvertForm convertForm) {
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
         ModelAndView mv = new ModelAndView("converter");
         mv.addObject("currencies", currencies);
@@ -32,7 +33,7 @@ public class CurrencyController {
     }
 
     @PostMapping("/converter")
-    public ModelAndView convert(@ModelAttribute ConvertForm convertForm) {
+    public ModelAndView convert(@ModelAttribute @Valid ConvertForm convertForm) {
         log.info("Starting to calculate conversion");
 
         Iterable<Currency> currencies = conversionService.getAllCurrencies();

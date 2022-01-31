@@ -1,0 +1,59 @@
+* {
+    box-sizing: border-box;
+}
+
+.listForm {
+    margin-left: 20px;
+}
+
+.selectors {
+    margin-right: 50px;
+}
+
+.listForm input, select {
+    width: 300px;
+    margin-right: 50px;
+    margin-bottom: 20px;
+
+}
+
+.selectors select {
+    width: 300px;
+    margin-right: 50px;
+    margin-bottom: 20px;
+}
+
+.selectors input {
+    margin-right: 50px;
+}
+
+.listForm h1 {
+    margin-left: 300px;
+    font-weight: 700;
+}
+
+.selectors h1 {
+    font-weight: 700;
+    margin-left: 250px;
+    margin-bottom: 20px;
+}
+
+#btn-convert {
+    margin-left: 250px;
+}
+
+#btn-search {
+    margin-top: 40px;
+    margin-left: 400px;
+    width: 150px;
+
+}
+
+#btn-redirect {
+    margin-left: 50px;
+    width: 200px;
+}
+
+#convertForm {
+    margin-bottom: 100px;
+}
