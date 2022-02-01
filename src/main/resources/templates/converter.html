@@ -23,8 +23,8 @@
     </div>
     <div class="form-inline">
         <input style="width: 300px" type="text" class="form-control" id="amount" th:field="*{amount}"/>
-        <input style="width: 300px" type="text" class="form-control" id="result" placeholder="результат" th:value="${result}">
-        <h6 th:if="${#fields.hasErrors('amount')}">число не должно быть отрицательным</h6>
+        <input style="width: 300px" type="text" class="form-control" id="result" placeholder="результат" th:value="${result}" readonly>
+        <h6 style="color: red" th:if="${#fields.hasErrors('amount')}">число не должно быть отрицательным</h6>
     </div>
     <button type="submit" id="btn-convert" class="btn btn-primary btn-lg">Конвертировать</button>
 </form>

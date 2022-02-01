@@ -20,7 +20,7 @@
         </select>
         <input type="date" class="form-control" id="historyDate" th:field="*{date}"/>
     </div>
-    <h6 th:if="${#fields.hasErrors('date')}">дата не может быть в будущем</h6>
+    <h6 style="color: red" th:if="${#fields.hasErrors('date')}">дата не может быть в будущем</h6>
 
     <table style="width: 50%" class="table table-striped" id="historyTable">
         <thead class="thead-light">
@@ -60,9 +60,9 @@
             <tr>
                 <td th:text="${weekStatistic.firstCurrency}"></td>
                 <td th:text="${weekStatistic.secondCurrency}"></td>
-                <td th:text="${weekStatistic.averageRate}"></td>
-                <td th:text="${weekStatistic.overallSum}"></td>
-                <td th:text="${weekStatistic.startDate} + ' - ' + ${weekStatistic.finishDate}"></td>
+                <td th:text="${weekStatistic.averageRate} ? ${weekStatistic.averageRate} : '---'"></td>
+                <td th:text="${weekStatistic.overallSum} ? ${weekStatistic.overallSum} : '---'"></td>
+                <td th:text="${weekStatistic.startDate} ? (${weekStatistic.startDate} + ' - ' + ${weekStatistic.finishDate}) : '---'"></td>
             </tr>
         </tbody>
     </table>

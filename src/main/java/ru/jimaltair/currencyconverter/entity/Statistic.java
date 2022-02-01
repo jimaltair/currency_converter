@@ -18,4 +18,8 @@ public class Statistic {
     private double overallSum;
     private LocalDate startDate;
     private LocalDate finishDate;
+
+    public static Statistic getNullStatistic() {
+        return new Statistic(null, null, 0.0, 0.0, null, null);
+    }
 }

@@ -28,6 +28,14 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     private final CurrencyRateRepository currencyRateRepository;
     private final ExchangeRepository exchangeRepository;
 
+    /**
+     * Метод, производящий конвертацию валютной пары с использованием кросс-курса к рублю
+     *
+     * @param firstCurrencyCode  - валюта, которую нужно конвертировать
+     * @param secondCurrencyCode - валюта, в которую конвертируем
+     * @param amount             - количество конвертируемой валюты
+     * @return результат конвертации - число типа {@code double}
+     */
     @Override
     public double calculateConversionResult(String firstCurrencyCode, String secondCurrencyCode, double amount) {
         /**
@@ -122,14 +130,15 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         for (LocalDate date : dates) {
             weekHistory.addAll(getHistory(firstCurrency, secondCurrency, date));
         }
+        // если за указанную неделю обменов не было, вернём пустой объект статистики
+        if (weekHistory.isEmpty()) {
+            return Statistic.getNullStatistic();
+        }
         // вычисляем средний курс конвертаций по указанной паре за неделю
         double averageRate = weekHistory.stream()
                 .mapToDouble(Exchange::getRate)
                 .average()
-                .orElse(0);
-        if (averageRate == 0) {
-            return new Statistic(firstCurrency, secondCurrency, 0, 0, startDate, finishDate);
-        }
+                .getAsDouble();
         averageRate = roundToFourDecimalPlates(averageRate);
         // вычисляем общую сумму конвертаций по указанной паре за неделю
         double overallSum = weekHistory.stream()

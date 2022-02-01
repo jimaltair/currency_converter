@@ -67,6 +67,8 @@ public class CurrencyController {
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
         mv.addObject("currencies", currencies);
         if (bindingResult.hasErrors()) {
+            // кладём пустой объект статистики чтобы не словить 500-ую ошибку
+            mv.addObject("weekStatistic", Statistic.getNullStatistic());
             log.error("The field 'date' is in future");
             return mv;
         }
@@ -75,6 +77,8 @@ public class CurrencyController {
         log.info("Received the history with {} records", exchangeHistory.size());
         Statistic weekStatistic = conversionService.getStatistic(historyForm.getFirstCurrency(),
                 historyForm.getSecondCurrency(), historyForm.getDate().minusDays(6), historyForm.getDate());
+        log.info("Received the week statistic with averageRate={} and overallSum={}", weekStatistic.getAverageRate(),
+                weekStatistic.getOverallSum());
         mv.addObject("exchangeHistory", exchangeHistory);
         mv.addObject("weekStatistic", weekStatistic);
 
