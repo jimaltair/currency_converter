@@ -132,6 +132,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         }
         // если за указанную неделю обменов не было, вернём пустой объект статистики
         if (weekHistory.isEmpty()) {
+            log.warn("There is no statistic for {} and {} for last week", firstCurrency, secondCurrency);
             return Statistic.getNullStatistic();
         }
         // вычисляем средний курс конвертаций по указанной паре за неделю

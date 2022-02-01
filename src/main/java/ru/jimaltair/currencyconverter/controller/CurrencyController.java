@@ -3,7 +3,6 @@ package ru.jimaltair.currencyconverter.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,8 +14,6 @@ import ru.jimaltair.currencyconverter.entity.Statistic;
 import ru.jimaltair.currencyconverter.service.CurrencyConversionService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -72,9 +69,11 @@ public class CurrencyController {
             log.error("The field 'date' is in future");
             return mv;
         }
+        // получаем историю конвертаций валютной пары за указанную дату
         List<Exchange> exchangeHistory = conversionService.getHistory(historyForm.getFirstCurrency(),
                 historyForm.getSecondCurrency(), historyForm.getDate());
         log.info("Received the history with {} records", exchangeHistory.size());
+        // получаем статистику валютной пары за неделю
         Statistic weekStatistic = conversionService.getStatistic(historyForm.getFirstCurrency(),
                 historyForm.getSecondCurrency(), historyForm.getDate().minusDays(6), historyForm.getDate());
         log.info("Received the week statistic with averageRate={} and overallSum={}", weekStatistic.getAverageRate(),
