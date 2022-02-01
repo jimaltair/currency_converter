@@ -52,7 +52,7 @@
                 <th>Исходная валюта</th>
                 <th>Валюта конвертации</th>
                 <th>Средний курс</th>
-                <th>Объём конвертации</th>
+                <th>Объём конвертаций</th>
                 <th>Даты</th>
             </tr>
         </thead>
@@ -66,11 +66,14 @@
             </tr>
         </tbody>
     </table>
-
     <button type="submit" id="btn-search" class="btn btn-primary btn-lg">Поиск</button>
 </form>
-<form action="/converter">
-    <button id="btn-redirect"><< Конвертировать валюту</button>
+
+<br/>
+<hr/>
+
+<form class="listForm" action="/converter">
+    <button type="submit" id="btn-redirect" class="btn btn-primary btn-lg">Конвертировать валюту</button>
 </form>
 </body>
 </html>
