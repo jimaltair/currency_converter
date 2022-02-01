@@ -11,6 +11,7 @@ import ru.jimaltair.currencyconverter.dto.ConvertForm;
 import ru.jimaltair.currencyconverter.dto.HistoryForm;
 import ru.jimaltair.currencyconverter.entity.Currency;
 import ru.jimaltair.currencyconverter.entity.Exchange;
+import ru.jimaltair.currencyconverter.entity.Statistic;
 import ru.jimaltair.currencyconverter.service.CurrencyConversionService;
 
 import javax.validation.Valid;
@@ -55,6 +56,7 @@ public class CurrencyController {
         ModelAndView mv = new ModelAndView("history");
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
         mv.addObject("currencies", currencies);
+        mv.addObject("weekStatistic", new Statistic());
         return mv;
     }
 
@@ -71,7 +73,10 @@ public class CurrencyController {
         List<Exchange> exchangeHistory = conversionService.getHistory(historyForm.getFirstCurrency(),
                 historyForm.getSecondCurrency(), historyForm.getDate());
         log.info("Received the history with {} records", exchangeHistory.size());
+        Statistic weekStatistic = conversionService.getStatistic(historyForm.getFirstCurrency(),
+                historyForm.getSecondCurrency(), historyForm.getDate().minusDays(6), historyForm.getDate());
         mv.addObject("exchangeHistory", exchangeHistory);
+        mv.addObject("weekStatistic", weekStatistic);
 
         return mv;
     }

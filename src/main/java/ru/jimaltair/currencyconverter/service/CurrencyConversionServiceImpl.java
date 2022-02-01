@@ -3,10 +3,7 @@ package ru.jimaltair.currencyconverter.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.jimaltair.currencyconverter.entity.Currency;
-import ru.jimaltair.currencyconverter.entity.CurrencyRate;
-import ru.jimaltair.currencyconverter.entity.Exchange;
-import ru.jimaltair.currencyconverter.entity.XMLContent;
+import ru.jimaltair.currencyconverter.entity.*;
 import ru.jimaltair.currencyconverter.repository.CurrencyRateRepository;
 import ru.jimaltair.currencyconverter.repository.CurrencyRepository;
 import ru.jimaltair.currencyconverter.repository.ExchangeRepository;
@@ -15,7 +12,12 @@ import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -65,8 +67,8 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         double crossRate = (curRate1.getRate() / cur1Nominal) / (curRate2.getRate() / cur2Nominal);
         double result = amount * crossRate;
         // округляем результат до 4-ёх знаков после запятой
-        result = Double.parseDouble(new DecimalFormat("#.####").format(result).replace(',', '.'));
-        crossRate = Double.parseDouble(new DecimalFormat("#.####").format(crossRate).replace(',', '.'));
+        result = roundToFourDecimalPlates(result);
+        crossRate = roundToFourDecimalPlates(crossRate);
         log.info("The result of conversion is {} {}", result, secondCurrencyCode);
         Exchange exchange = Exchange.builder()
                 .firstCurrency(cur1)
@@ -85,8 +87,59 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         return currencyRepository.findAll();
     }
 
+    /**
+     * Метод, позволяющий получить историю обменов произведённых по валютной паре за определённую дату
+     *
+     * @param firstCurrency  - валюта, которую нужно конвертировать
+     * @param secondCurrency - валюта, в которую конвертируем
+     * @param date           - дата, за которую ищем историю произведённых обменов
+     * @return {@link Iterable}, параметризованный объектом {@link Currency} - содержит в себе всю историю обменов
+     * валютной пары за указанную дату
+     */
     @Override
     public List<Exchange> getHistory(String firstCurrency, String secondCurrency, LocalDate date) {
         return exchangeRepository.findAllByFirstCurrencyCharCodeAndSecondCurrencyCharCodeAndMadeAt(firstCurrency, secondCurrency, date);
+    }
+
+    /**
+     * Метод, позволяющий получить статистическую информацию по обмену валютной пары в указанном диапазоне дат
+     *
+     * @param firstCurrency  - валюта, которую нужно конвертировать
+     * @param secondCurrency - валюта, в которую конвертируем
+     * @param startDate      - дата начала периода, за который ведётся подсчёт статистики
+     * @param finishDate     - конечная дата периода, за который ведётся подсчёт статистики
+     * @return объект {@link Statistic}, поля которого содержат в себе входящие параметры, а также средний курс конвертации и
+     * общую сумму сконвертированных средств
+     */
+    @Override
+    public Statistic getStatistic(String firstCurrency, String secondCurrency, LocalDate startDate, LocalDate finishDate) {
+        // получаем список дат в указанном диапазоне с шагом в 1 день
+        List<LocalDate> dates = Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(startDate, finishDate.plusDays(1)))
+                .collect(Collectors.toList());
+        // получаем историю обменов по каждому дню из полученного диапазона дат
+        List<Exchange> weekHistory = new ArrayList<>();
+        for (LocalDate date : dates) {
+            weekHistory.addAll(getHistory(firstCurrency, secondCurrency, date));
+        }
+        // вычисляем средний курс конвертаций по указанной паре за неделю
+        double averageRate = weekHistory.stream()
+                .mapToDouble(Exchange::getRate)
+                .average()
+                .orElse(0);
+        if (averageRate == 0) {
+            return new Statistic(firstCurrency, secondCurrency, 0, 0, startDate, finishDate);
+        }
+        averageRate = roundToFourDecimalPlates(averageRate);
+        // вычисляем общую сумму конвертаций по указанной паре за неделю
+        double overallSum = weekHistory.stream()
+                .mapToDouble(Exchange::getResultOfConversion)
+                .sum();
+        overallSum = roundToFourDecimalPlates(overallSum);
+        return new Statistic(firstCurrency, secondCurrency, averageRate, overallSum, startDate, finishDate);
+    }
+
+    private double roundToFourDecimalPlates(double number) {
+        return Double.parseDouble(new DecimalFormat("#.####").format(number).replace(',', '.'));
     }
 }
