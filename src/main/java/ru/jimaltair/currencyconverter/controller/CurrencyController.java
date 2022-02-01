@@ -65,7 +65,7 @@ public class CurrencyController {
         mv.addObject("currencies", currencies);
         if (bindingResult.hasErrors()) {
             // кладём пустой объект статистики чтобы не словить 500-ую ошибку
-            mv.addObject("weekStatistic", Statistic.getNullStatistic());
+            mv.addObject("weekStatistic", new Statistic());
             log.error("The field 'date' is in future");
             return mv;
         }
