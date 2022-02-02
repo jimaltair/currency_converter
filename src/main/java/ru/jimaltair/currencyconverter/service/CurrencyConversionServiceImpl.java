@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Сервисный класс, содержащий основную логику приложения: конвертирование валют, получение списка валют и
+ * истории их конвертаций из репозитория, вычисление статистической информации.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,7 +33,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     private final ExchangeRepository exchangeRepository;
 
     /**
-     * Метод, производящий конвертацию валютной пары с использованием кросс-курса к рублю
+     * Метод, производящий конвертацию валютной пары с использованием кросс-курса к рублю.
      *
      * @param firstCurrencyCode  - валюта, которую нужно конвертировать
      * @param secondCurrencyCode - валюта, в которую конвертируем
@@ -63,7 +67,8 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         // если дата получения курса хотя бы одной из валют устарела (кроме воскресенья), делаем запрос к ЦБР на получение
         // актуальных курсов и сохраняем эти данные в БД, после этого запрашиваем обновлённый курс вычисляемых валют
         LocalDate currentDate = LocalDate.now();
-        if (currentDate.getDayOfWeek() != DayOfWeek.SUNDAY && (curRate1.getDate().isBefore(currentDate) || curRate2.getDate().isBefore(currentDate))) {
+        if (currentDate.getDayOfWeek() != DayOfWeek.SUNDAY && (curRate1.getDate().isBefore(currentDate)
+                || curRate2.getDate().isBefore(currentDate))) {
             log.info("Try to load new rates from CBR for {}", currentDate);
             XMLContent xmlContent = XMLService.initXMLService();
             currencyRateRepository.saveAll(xmlContent.getCurrencyRates());
@@ -78,6 +83,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         result = roundToFourDecimalPlates(result);
         crossRate = roundToFourDecimalPlates(crossRate);
         log.info("The result of conversion is {} {}", result, secondCurrencyCode);
+        // сохраняем произведенный обмен в соответствующий репозиторий
         Exchange exchange = Exchange.builder()
                 .firstCurrency(cur1)
                 .secondCurrency(cur2)
@@ -96,7 +102,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     }
 
     /**
-     * Метод, позволяющий получить историю обменов произведённых по валютной паре за определённую дату
+     * Метод, позволяющий получить историю обменов произведённых по валютной паре за определённую дату.
      *
      * @param firstCurrency  - валюта, которую нужно конвертировать
      * @param secondCurrency - валюта, в которую конвертируем
@@ -110,7 +116,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     }
 
     /**
-     * Метод, позволяющий получить статистическую информацию по обмену валютной пары в указанном диапазоне дат
+     * Метод, позволяющий получить статистическую информацию по обмену валютной пары в указанном диапазоне дат.
      *
      * @param firstCurrency  - валюта, которую нужно конвертировать
      * @param secondCurrency - валюта, в которую конвертируем

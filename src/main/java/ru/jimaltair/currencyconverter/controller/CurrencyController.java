@@ -58,7 +58,7 @@ public class CurrencyController {
     }
 
     @PostMapping("/history")
-    public ModelAndView getHistory(@ModelAttribute @Valid HistoryForm historyForm, BindingResult bindingResult) {
+    public ModelAndView getHistoryAndStatistic(@ModelAttribute @Valid HistoryForm historyForm, BindingResult bindingResult) {
         log.info("Starting to search conversion history");
         ModelAndView mv = new ModelAndView("history");
         Iterable<Currency> currencies = conversionService.getAllCurrencies();
@@ -80,7 +80,6 @@ public class CurrencyController {
                 weekStatistic.getOverallSum());
         mv.addObject("exchangeHistory", exchangeHistory);
         mv.addObject("weekStatistic", weekStatistic);
-
         return mv;
     }
 }

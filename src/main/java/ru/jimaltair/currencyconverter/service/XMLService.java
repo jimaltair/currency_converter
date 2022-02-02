@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Сервисный класс, отвечающий за считывание и парсинг xml-документа с сайта ЦБ РФ
+ */
 @Slf4j
 @Component
 public class XMLService {
@@ -112,6 +115,5 @@ public class XMLService {
                 .date(currentDate)
                 .currency(getCurrencyFromXMLNode(node))
                 .build();
-
     };
 }

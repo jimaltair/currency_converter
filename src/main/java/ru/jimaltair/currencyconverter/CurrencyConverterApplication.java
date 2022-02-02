@@ -21,7 +21,8 @@ public class CurrencyConverterApplication {
     }
 
     @Bean
-    ApplicationRunner initApplicationRunner(CurrencyRepository currencyRepository, CurrencyRateRepository currencyRateRepository){
+    ApplicationRunner initApplicationRunner(CurrencyRepository currencyRepository, CurrencyRateRepository currencyRateRepository) {
+        // после запуска приложения считываем актуальные курсы с сайта ЦБ РФ
         XMLContent xmlContent = XMLService.initXMLService();
         return args -> {
             currencyRepository.saveAll(xmlContent.getCurrencies());
