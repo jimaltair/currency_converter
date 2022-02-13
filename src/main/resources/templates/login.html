@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <title>Авторизация пользователя</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
 </head>
 <body>
-<form th:method="POST" th:action="@{/login}">
-    <h1>Конвертер валют</h1>
+<form th:method="POST" th:action="@{/login}" class="form-signin">
+    <h1 class="h3 mb-3 font-weight-normal">Конвертер валют</h1>
     <div>
-        <input type="text" placeholder="Логин" name="username"/>
+        <input class="form-control" type="text" placeholder="Логин" name="username" required autofocus/>
     </div>
     <div>
-        <input type="password" placeholder="Пароль" name="password"/>
+        <input class="form-control" type="password" placeholder="Пароль" name="password" required/>
     </div>
     <div>
-        <input type="submit" value="Войти"/>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Войти"/>
     </div>
 </form>
 </body>
