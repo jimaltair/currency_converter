@@ -13,6 +13,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("converter");
+        registry.addViewController("/login").setViewName("login");
     }
 
     @Bean

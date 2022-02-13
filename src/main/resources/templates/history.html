@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
 </head>
 <body>
+<form th:method="POST" th:action="@{/logout}">
+    <input type="submit" value="Выход">
+</form>
 
 <form th:method="POST" th:action="@{/history}" class="listForm" id="historyForm" th:object="${historyForm}">
     <h1>История</h1>

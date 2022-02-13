@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
 </head>
 <body>
+<form th:method="POST" th:action="@{/logout}">
+    <input type="submit" value="Выход">
+</form>
 
 <form th:method="POST" th:action="@{/converter}" class="listForm" id="convertForm" th:object="${convertForm}">
     <div class="selectors">
